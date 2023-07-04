@@ -1,6 +1,6 @@
 import 'package:d_ml/function/euclidean_distance.dart';
 import 'package:d_ml/model/ml_model_base.dart';
-import 'package:dtensor/src/core/dtensor.dart';
+import 'package:dtensor/dtensor.dart';
 
 class KNN extends MLModelBase<num> {
   final int k;
@@ -16,7 +16,7 @@ class KNN extends MLModelBase<num> {
 
   @override
   DTensor<num> predict(DTensor<num> x) {
-    final DTensor<num> result = DTensor<num>.empty();
+    final DTensor<num> result = DTensor<num>.empty(x.shape);
     for (DTensor<num> element in x) {
       result.add(_predict(element));
     }
@@ -24,13 +24,16 @@ class KNN extends MLModelBase<num> {
   }
 
   DTensor<num> _predict(DTensor<num> x) {
-    final DTensor<num> distances = DTensor<num>.empty();
+    final DTensor<num> distances = DTensor<num>.empty(x.shape);
     for (DTensor<num> element in x) {
       distances.add(euclideanDistance(x, element));
     }
-    //TODO: create argsort
-    // argsort
-    //TODO: slicing
-    throw Exception();
+    final DTensor<int> sortIndces = distances.argSort();
+    final DTensor<int> topK = sortIndces.subTensor(end: k);
+    for (DTensor<int> value in topK) {
+      distances.add(y.getFromDtensor(value));
+    }
+
+    return distances.mode().get([0]);
   }
 }

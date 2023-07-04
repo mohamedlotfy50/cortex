@@ -1,6 +1,6 @@
 import 'package:d_ml/function/sigmoid.dart';
 import 'package:d_ml/model/ml_model_base.dart';
-import 'package:dtensor/src/core/dtensor.dart';
+import 'package:dtensor/dtensor.dart';
 
 class LogisticRegression extends MLModelBase<num> {
   final double lr;
